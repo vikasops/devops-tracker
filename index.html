@@ -3,131 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevOps Tracker - Firebase Debug</title>
+    <title>DevOps Preparation Tracker</title>
     <!-- Firebase SDK v9 (latest stable) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <style>
 :root {
-  --primary: #2563eb;
-  --primary-light: #3b82f6;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --bg: #f8fafc;
-  --surface: #ffffff;
-  --border: #e2e8f0;
-  --text: #1e293b;
-  --text-muted: #64748b;
+  --color-primary: #2563eb;
+  --color-primary-light: #3b82f6;
+  --color-primary-dark: #1d4ed8;
+  --color-secondary: #64748b;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --color-text: #1e293b;
+  --color-text-muted: #64748b;
+  --border-radius: 8px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --transition: all 0.2s ease-in-out;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.6;
-  color: var(--text);
-  background-color: var(--bg);
+  color: var(--color-text);
+  background-color: var(--color-background);
 }
 
-.container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
-
-/* Debug Panel */
-.debug-panel {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  width: 400px;
-  max-height: 80vh;
-  z-index: 1000;
-  overflow: hidden;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
-
-.debug-header {
-  background: var(--primary);
-  color: white;
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-}
-
-.debug-content {
-  padding: 1rem;
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
-.debug-content.collapsed { display: none; }
-
-.debug-item {
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  border-radius: 6px;
-  border: 1px solid;
-  font-size: 0.875rem;
-}
-
-.debug-item.success {
-  background: rgba(16, 185, 129, 0.1);
-  border-color: var(--success);
-  color: #065f46;
-}
-
-.debug-item.warning {
-  background: rgba(245, 158, 11, 0.1);
-  border-color: var(--warning);
-  color: #92400e;
-}
-
-.debug-item.error {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: var(--danger);
-  color: #dc2626;
-}
-
-.debug-label {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.debug-value {
-  font-family: monospace;
-  font-size: 0.8rem;
-  word-break: break-all;
-  background: rgba(0,0,0,0.05);
-  padding: 0.25rem;
-  border-radius: 3px;
-}
-
-.debug-test-btn {
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  margin: 0.25rem 0.5rem 0.25rem 0;
-}
-
-.debug-test-btn:hover { background: var(--primary-light); }
-.debug-test-btn:disabled { background: #94a3b8; cursor: not-allowed; }
 
 /* Header */
 .header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
   padding: 1rem 0;
   position: sticky;
   top: 0;
   z-index: 100;
+  backdrop-filter: blur(10px);
 }
 
 .header .container {
@@ -141,8 +69,22 @@ body {
 .header__title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--color-primary);
   text-decoration: none;
+}
+
+.header__nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.header__user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
 }
 
 .header__controls {
@@ -152,6 +94,31 @@ body {
   flex-wrap: wrap;
 }
 
+.sync-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.sync-status.synced {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+.sync-status.syncing {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+}
+
+.sync-status.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger);
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;
@@ -159,26 +126,86 @@ body {
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
   white-space: nowrap;
+  text-align: center;
+  justify-content: center;
 }
 
-.btn--sm { padding: 0.375rem 0.75rem; font-size: 0.8rem; }
-.btn--primary { background: var(--primary); color: white; }
-.btn--primary:hover { background: var(--primary-light); }
-.btn--outline { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
-.btn--outline:hover { background: var(--primary); color: white; }
-.btn--danger { background: var(--danger); color: white; }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
-/* Landing */
+.btn--sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.btn--lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.btn--secondary {
+  background: var(--color-secondary);
+  color: white;
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background: #475569;
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.btn--outline:hover:not(:disabled) {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn--outline-danger {
+  background: transparent;
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+}
+
+.btn--outline-danger:hover:not(:disabled) {
+  background: var(--color-danger);
+  color: white;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+  padding: 0.5rem;
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+/* Landing Page */
 .landing {
-  min-height: 80vh;
+  min-height: calc(100vh - 120px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -193,14 +220,43 @@ body {
 .landing__title {
   font-size: 3rem;
   font-weight: 800;
+  color: var(--color-text);
   margin-bottom: 1rem;
   line-height: 1.2;
 }
 
 .landing__subtitle {
   font-size: 1.25rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.landing__features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin: 3rem 0;
+}
+
+.feature {
+  text-align: center;
+}
+
+.feature__icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.feature__title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+}
+
+.feature__description {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
 }
 
 /* Auth Modal */
@@ -210,7 +266,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -218,13 +274,15 @@ body {
   backdrop-filter: blur(4px);
 }
 
-.auth-modal.hidden { display: none; }
+.auth-modal.hidden {
+  display: none;
+}
 
 .auth-form {
   background: white;
   padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
   width: 100%;
   max-width: 400px;
   margin: 1rem;
@@ -234,6 +292,7 @@ body {
 .auth-form h2 {
   margin-bottom: 1.5rem;
   text-align: center;
+  color: var(--color-text);
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -246,42 +305,66 @@ body {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  color: var(--color-text);
   font-size: 0.875rem;
 }
 
 .form-control {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
   font-size: 1rem;
-  transition: all 0.2s;
+  transition: var(--transition);
 }
 
 .form-control:focus {
   outline: none;
-  border-color: var(--primary);
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .error {
-  color: var(--danger);
+  color: var(--color-danger);
   font-size: 0.875rem;
   margin-top: 0.5rem;
   padding: 0.75rem;
   background: rgba(239, 68, 68, 0.1);
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .success {
-  color: var(--success);
+  color: var(--color-success);
   font-size: 0.875rem;
   margin-top: 0.5rem;
   padding: 0.75rem;
   background: rgba(16, 185, 129, 0.1);
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.auth-switch button {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+  margin-left: 0.25rem;
+}
+
+.auth-switch button:hover {
+  text-decoration: underline;
 }
 
 .close-modal {
@@ -291,7 +374,7 @@ body {
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   cursor: pointer;
   width: 2rem;
   height: 2rem;
@@ -299,113 +382,436 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: var(--transition);
 }
 
-.close-modal:hover { background: var(--border); }
-
-.auth-switch {
-  text-align: center;
-  margin-top: 1rem;
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
+.close-modal:hover {
+  background: var(--color-border);
 }
 
-.auth-switch button {
-  background: none;
-  border: none;
-  color: var(--primary);
-  cursor: pointer;
-  font-weight: 500;
-  text-decoration: underline;
-  margin-left: 0.25rem;
-}
-
-/* Main app */
+/* Main Content (Tracker) */
 .main {
   padding: 2rem 0;
-  min-height: 80vh;
+  min-height: calc(100vh - 200px);
 }
 
-.hidden { display: none !important; }
+/* Cards */
+.card {
+  background: var(--color-surface);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+}
+
+.card__header {
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.card__body {
+  padding: 1.25rem;
+}
+
+/* Progress Overview */
+.progress-overview h2 {
+  margin-bottom: 1rem;
+  color: var(--color-text);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 12px;
+  background-color: var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-success) 0%, var(--color-primary) 100%);
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.progress-percentage {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  min-width: 4rem;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+/* Search */
+.search-section {
+  margin-bottom: 2rem;
+}
+
+/* Topic Sections */
+.topic-section {
+  margin-bottom: 1rem;
+}
+
+.topic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 1rem 1.25rem;
+}
+
+.topic-header:hover {
+  background-color: rgba(37, 99, 235, 0.02);
+}
+
+.topic-header__left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.topic-header__right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.topic-toggle {
+  color: var(--color-secondary);
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+.topic-toggle:hover {
+  background: var(--color-border);
+}
+
+.topic-toggle[aria-expanded="true"] .chevron-icon {
+  transform: rotate(90deg);
+}
+
+.chevron-icon {
+  transition: transform 0.2s ease;
+  width: 20px;
+  height: 20px;
+}
+
+.topic-info {
+  flex: 1;
+}
+
+.topic-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--color-text);
+}
+
+.topic-description {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.progress-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.progress-circle {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring__circle {
+  stroke: var(--color-primary);
+  stroke-dasharray: 113;
+  stroke-dashoffset: 113;
+  transition: stroke-dashoffset 0.3s ease;
+  fill: none;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.progress-stats-small {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* Topic Content */
+.topic-content {
+  border-top: 1px solid var(--color-border);
+  padding: 0;
+  display: none;
+}
+
+.subtopics-list {
+  padding: 0;
+}
+
+.subtopic-item {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  transition: var(--transition);
+}
+
+.subtopic-item:last-child {
+  border-bottom: none;
+}
+
+.subtopic-item:hover {
+  background-color: rgba(37, 99, 235, 0.02);
+}
+
+.subtopic-item.completed {
+  background-color: rgba(16, 185, 129, 0.05);
+}
+
+.subtopic-item.completed .subtopic-name {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.subtopic-header {
+  margin-bottom: 0.75rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.checkbox-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkbox-custom {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-border);
+  border-radius: 3px;
+  background: var(--color-surface);
+  transition: var(--transition);
+  position: relative;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+  background: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
+  content: '✓';
+  position: absolute;
+  color: white;
+  font-size: 12px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.subtopic-name {
+  flex: 1;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.subtopic-comments {
+  margin-left: 2.5rem;
+}
+
+.subtopic-comments textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  resize: vertical;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.subtopic-comments textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
 
 /* Footer */
 .footer {
   margin-top: 4rem;
   padding: 2rem 0;
-  border-top: 1px solid var(--border);
-  background: var(--surface);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.footer-content {
   text-align: center;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-size: 0.875rem;
 }
 
-/* Responsive */
+.footer-content p {
+  margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .debug-panel {
-    position: relative;
-    top: 0;
-    right: 0;
-    width: 100%;
-    margin: 1rem 0;
+  .landing__title {
+    font-size: 2rem;
   }
 
-  .landing__title { font-size: 2rem; }
-  .landing__subtitle { font-size: 1rem; }
+  .landing__subtitle {
+    font-size: 1rem;
+  }
+
+  .header .container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .header__nav {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .topic-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .topic-header__right {
+    justify-content: center;
+  }
+
+  .progress-bar-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .progress-percentage {
+    text-align: center;
+  }
+
+  .progress-stats {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 0.75rem;
+  }
+
+  .landing {
+    padding: 2rem 0;
+  }
+
+  .landing__features {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .header__title {
+    font-size: 1.25rem;
+  }
+
+  .card__header,
+  .card__body {
+    padding: 1rem;
+  }
+
+  .subtopic-item {
+    padding: 0.75rem 1rem;
+  }
+
+  .subtopic-comments {
+    margin-left: 1.75rem;
+  }
+
+  .auth-form {
+    margin: 0.5rem;
+    padding: 1.5rem;
+  }
+}
+
+/* Loading Animation */
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-text-muted);
+}
+
+/* Hidden utility */
+.hidden {
+  display: none !important;
 }
     </style>
 </head>
 <body>
-    <!-- Debug Panel -->
-    <div class="debug-panel">
-        <div class="debug-header" id="debugHeader">
-            <h4>🔧 Firebase Debug Console</h4>
-            <button class="debug-toggle" id="debugToggle" style="background: none; border: none; color: white; cursor: pointer; padding: 0.25rem;">−</button>
-        </div>
-        <div class="debug-content" id="debugContent">
-            <div id="debugInfo">
-                <div class="debug-item warning" id="configStatus">
-                    <div class="debug-label">🔧 Configuration Status</div>
-                    <div class="debug-value" id="configValue">Checking Firebase configuration...</div>
-                </div>
-
-                <div class="debug-item warning" id="firebaseStatus">
-                    <div class="debug-label">🔥 Firebase Connection</div>
-                    <div class="debug-value" id="firebaseValue">Testing Firebase initialization...</div>
-                </div>
-
-                <div class="debug-item" id="authStatus">
-                    <div class="debug-label">🔐 Authentication Status</div>
-                    <div class="debug-value" id="authValue">Not authenticated</div>
-                </div>
-
-                <div class="debug-item" id="domainStatus">
-                    <div class="debug-label">🌐 Domain Authorization</div>
-                    <div class="debug-value" id="domainValue">Current: ${window.location.hostname}</div>
-                </div>
-
-                <div class="debug-item" id="databaseStatus">
-                    <div class="debug-label">🗄️ Database Status</div>
-                    <div class="debug-value" id="databaseValue">Not tested</div>
-                </div>
-            </div>
-
-            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
-                <button class="debug-test-btn" id="testAuthBtn">Test Auth</button>
-                <button class="debug-test-btn" id="testDbBtn">Test Database</button>
-                <button class="debug-test-btn" id="clearLogsBtn">Clear Console</button>
-            </div>
-
-            <div id="debugLogs" style="margin-top: 1rem; font-size: 0.75rem; max-height: 200px; overflow-y: auto; background: #1a202c; color: #e2e8f0; padding: 0.5rem; border-radius: 4px; font-family: monospace;"></div>
-        </div>
-    </div>
-
-    <!-- Auth Modal -->
+    <!-- Authentication Modal -->
     <div class="auth-modal hidden" id="authModal">
         <div class="auth-form">
-            <button class="close-modal" id="closeModal">&times;</button>
+            <button class="close-modal" id="closeModal" type="button">&times;</button>
             <h2 id="authTitle">Welcome Back</h2>
             <form id="authForm">
                 <div class="form-group">
@@ -414,7 +820,7 @@ body {
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" class="form-control" required placeholder="Enter your password (6+ characters)">
+                    <input type="password" id="password" class="form-control" required placeholder="Enter your password">
                 </div>
                 <div id="authError" class="error hidden"></div>
                 <div id="authSuccess" class="success hidden"></div>
@@ -433,20 +839,34 @@ body {
 
     <header class="header">
         <div class="container">
-            <a href="#" class="header__title" id="homeLink">DevOps Tracker - Debug Mode</a>
-            <div class="header__controls">
+            <a href="#" class="header__title" id="homeLink">DevOps Tracker</a>
+            <nav class="header__nav">
                 <!-- Guest Navigation -->
-                <div id="guestNav">
-                    <button class="btn btn--outline btn--sm" id="signInBtn">Sign In</button>
-                    <button class="btn btn--primary btn--sm" id="signUpBtn">Sign Up</button>
+                <div class="header__guest" id="guestNav">
+                    <div class="header__controls">
+                        <button class="btn btn--outline btn--sm" id="signInBtn">Sign In</button>
+                        <button class="btn btn--primary btn--sm" id="signUpBtn">Sign Up</button>
+                    </div>
                 </div>
 
                 <!-- Authenticated Navigation -->
-                <div id="authNav" class="hidden">
-                    <span id="userEmail" style="margin-right: 1rem; font-size: 0.875rem; color: var(--text-muted);"></span>
-                    <button class="btn btn--danger btn--sm" id="signOutBtn">Sign Out</button>
+                <div class="header__auth hidden" id="authNav">
+                    <div class="header__user-info">
+                        <div class="sync-status synced" id="syncStatus">
+                            <span>●</span>
+                            <span>Synced</span>
+                        </div>
+                        <span id="userEmail"></span>
+                    </div>
+                    <div class="header__controls">
+                        <button class="btn btn--ghost btn--sm" id="expandAllBtn">
+                            <span id="expandAllText">Expand All</span>
+                        </button>
+                        <button class="btn btn--outline btn--sm" id="exportBtn">Export</button>
+                        <button class="btn btn--outline-danger btn--sm" id="signOutBtn">Sign Out</button>
+                    </div>
                 </div>
-            </div>
+            </nav>
         </div>
     </header>
 
@@ -455,43 +875,94 @@ body {
         <section class="landing" id="landingSection">
             <div class="container">
                 <div class="landing__content">
-                    <h1 class="landing__title">DevOps Tracker - Debug Mode</h1>
+                    <h1 class="landing__title">DevOps Preparation Tracker</h1>
                     <p class="landing__subtitle">
-                        This debug version will help identify and fix Firebase authentication issues.
-                        Check the debug panel in the top-right corner for real-time diagnostics.
+                        Master your DevOps interview preparation with a comprehensive tracking system 
+                        covering 8 key technology areas and 80+ essential topics.
                     </p>
 
+                    <div class="landing__features">
+                        <div class="feature">
+                            <div class="feature__icon">📊</div>
+                            <div class="feature__title">Progress Tracking</div>
+                            <div class="feature__description">Visual progress indicators and completion statistics</div>
+                        </div>
+                        <div class="feature">
+                            <div class="feature__icon">☁️</div>
+                            <div class="feature__title">Cloud Sync</div>
+                            <div class="feature__description">Your progress saved securely with Firebase</div>
+                        </div>
+                        <div class="feature">
+                            <div class="feature__icon">📱</div>
+                            <div class="feature__title">Multi-Device</div>
+                            <div class="feature__description">Access from anywhere, any device</div>
+                        </div>
+                    </div>
+
                     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
-                        <button class="btn btn--primary" style="padding: 0.75rem 1.5rem; font-size: 1rem;" id="getStartedBtn">Test Sign Up</button>
-                        <button class="btn btn--outline" style="padding: 0.75rem 1.5rem; font-size: 1rem;" id="demoModeBtn">Demo Mode</button>
+                        <button class="btn btn--primary btn--lg" id="getStartedBtn">Get Started</button>
+                        <button class="btn btn--outline btn--lg" id="demoModeBtn">Try Demo Mode</button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Tracker App (shown after login) -->
+        <!-- Tracker App -->
         <div class="main hidden" id="trackerApp">
             <div class="container">
-                <h2>✅ Authentication Successful!</h2>
-                <p>Firebase authentication is working correctly. You can now build the full tracker interface.</p>
-                <div style="margin-top: 2rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 6px; border-left: 4px solid var(--success);">
-                    <h3 style="color: var(--success); margin-bottom: 0.5rem;">🎉 Success!</h3>
-                    <p style="margin-bottom: 0;">Your Firebase setup is working perfectly. You're ready to deploy the full DevOps tracker!</p>
-                </div>
+                <!-- Overall Progress Section -->
+                <section class="progress-overview">
+                    <div class="card">
+                        <div class="card__body">
+                            <h2>📈 Your Progress</h2>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar">
+                                    <div class="progress-bar__fill" id="overallProgressFill"></div>
+                                </div>
+                                <span class="progress-percentage" id="overallProgressText">0%</span>
+                            </div>
+                            <div class="progress-stats">
+                                <span id="completedStats">0 of 80 topics completed</span>
+                                <span id="lastUpdated">Last updated: Never</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Search Section -->
+                <section class="search-section">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="searchInput" 
+                               placeholder="🔍 Search topics (e.g., Docker, Kubernetes, CI/CD...)">
+                    </div>
+                </section>
+
+                <!-- Topics Section -->
+                <section class="topics-section">
+                    <div id="topicsContainer">
+                        <div class="loading">Loading DevOps topics...</div>
+                    </div>
+                </section>
             </div>
         </div>
     </main>
 
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p><strong>Firebase Debug Mode</strong> - Diagnostics for DevOps Tracker</p>
-            <p style="margin-top: 0.5rem;">Check the debug panel for detailed Firebase status and error information.</p>
+            <div class="footer-content">
+                <p>&copy; 2025 DevOps Preparation Tracker. Built for the DevOps community.</p>
+                <p class="footer-links">
+                    <a href="https://github.com" target="_blank">GitHub</a> •
+                    <a href="https://kubernetes.io/docs" target="_blank">Kubernetes Docs</a> •
+                    <a href="https://terraform.io/docs" target="_blank">Terraform Docs</a>
+                </p>
+            </div>
         </div>
     </footer>
 
     <script>
-// Firebase Configuration - REPLACE WITH YOUR ACTUAL CONFIG
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase configuration - YOUR ACTUAL CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyD4adoJJjOAeGLqPBQFZAP88oWAbneH8uQ",
   authDomain: "devopstracker-5863d.firebaseapp.com",
@@ -502,288 +973,293 @@ const firebaseConfig = {
   measurementId: "G-XZH6ZS212V"
 };
 
-// Debug Logger Class
-class DebugLogger {
-    constructor() {
-        this.logs = [];
-        this.maxLogs = 50;
-        this.logElement = document.getElementById('debugLogs');
-    }
+// Initialize Firebase
+let auth = null;
+let db = null;
 
-    log(message, type = 'info') {
-        const timestamp = new Date().toLocaleTimeString();
-        const logEntry = { timestamp, message, type };
-        this.logs.push(logEntry);
-
-        if (this.logs.length > this.maxLogs) {
-            this.logs.shift();
-        }
-
-        this.updateDisplay();
-        console.log(`[${type.toUpperCase()}] ${message}`);
-    }
-
-    error(message) { this.log(`❌ ${message}`, 'error'); }
-    warn(message) { this.log(`⚠️ ${message}`, 'warning'); }
-    success(message) { this.log(`✅ ${message}`, 'success'); }
-    info(message) { this.log(`ℹ️ ${message}`, 'info'); }
-
-    clear() {
-        this.logs = [];
-        this.updateDisplay();
-    }
-
-    updateDisplay() {
-        if (this.logElement) {
-            this.logElement.innerHTML = this.logs.slice(-15).map(log => 
-                `<div style="margin-bottom: 0.25rem;">[${log.timestamp}] ${log.message}</div>`
-            ).join('');
-            this.logElement.scrollTop = this.logElement.scrollHeight;
-        }
-    }
+try {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    console.log('✅ Firebase initialized successfully');
+} catch (error) {
+    console.error('❌ Firebase initialization failed:', error);
 }
 
-const logger = new DebugLogger();
-
-// Firebase Debug Diagnostics
-class FirebaseDebugger {
-    constructor() {
-        this.isConfigured = false;
-        this.isInitialized = false;
-        this.auth = null;
-        this.db = null;
-
-        this.runDiagnostics();
-    }
-
-    async runDiagnostics() {
-        logger.info('Starting Firebase diagnostics...');
-
-        // Step 1: Check configuration
-        this.checkConfiguration();
-
-        // Step 2: Initialize Firebase
-        await this.initializeFirebase();
-
-        // Step 3: Test services
-        if (this.isInitialized) {
-            await this.testServices();
-        }
-
-        logger.info('Diagnostics complete');
-    }
-
-    checkConfiguration() {
-        const configStatus = document.getElementById('configStatus');
-        const configValue = document.getElementById('configValue');
-
-        if (firebaseConfig.apiKey === "AIzaSyD4adoJJjOAeGLqPBQFZAP88oWAbneH8uQ" || 
-            !firebaseConfig.apiKey || 
-            !firebaseConfig.projectId) {
-
-            configStatus.className = 'debug-item error';
-            configValue.innerHTML = `
-                <strong>❌ Configuration Missing</strong><br>
-                Please replace the firebaseConfig object with your actual Firebase configuration.
-            `;
-            logger.error('Firebase configuration not set up correctly');
-            return false;
-        }
-
-        configStatus.className = 'debug-item success';
-        configValue.innerHTML = `
-            <strong>✅ Configuration Found</strong><br>
-            Project: ${firebaseConfig.projectId}<br>
-            Domain: ${firebaseConfig.authDomain}
-        `;
-        logger.success('Firebase configuration loaded');
-        this.isConfigured = true;
-        return true;
-    }
-
-    async initializeFirebase() {
-        const firebaseStatus = document.getElementById('firebaseStatus');
-        const firebaseValue = document.getElementById('firebaseValue');
-
-        if (!this.isConfigured) {
-            firebaseStatus.className = 'debug-item error';
-            firebaseValue.textContent = 'Cannot initialize - configuration missing';
-            return;
-        }
-
-        try {
-            // Initialize Firebase
-            firebase.initializeApp(firebaseConfig);
-            this.auth = firebase.auth();
-            this.db = firebase.firestore();
-
-            firebaseStatus.className = 'debug-item success';
-            firebaseValue.innerHTML = `
-                <strong>✅ Firebase Initialized</strong><br>
-                Auth: Ready<br>
-                Firestore: Ready
-            `;
-
-            logger.success('Firebase services initialized successfully');
-            this.isInitialized = true;
-
-            // Set up auth state listener
-            this.auth.onAuthStateChanged((user) => {
-                this.updateAuthStatus(user);
-                if (user) {
-                    logger.success(`User signed in: ${user.email}`);
-                } else {
-                    logger.info('User signed out or not authenticated');
-                }
-            });
-
-        } catch (error) {
-            firebaseStatus.className = 'debug-item error';
-            firebaseValue.innerHTML = `
-                <strong>❌ Initialization Failed</strong><br>
-                Error: ${error.message}
-            `;
-            logger.error(`Firebase initialization failed: ${error.message}`);
-        }
-    }
-
-    updateAuthStatus(user) {
-        const authStatus = document.getElementById('authStatus');
-        const authValue = document.getElementById('authValue');
-
-        if (user) {
-            authStatus.className = 'debug-item success';
-            authValue.innerHTML = `
-                <strong>✅ Authenticated</strong><br>
-                Email: ${user.email}<br>
-                UID: ${user.uid}<br>
-                Verified: ${user.emailVerified}
-            `;
-        } else {
-            authStatus.className = 'debug-item';
-            authValue.textContent = 'Not authenticated';
-        }
-    }
-
-    async testServices() {
-        // Test domain authorization
-        await this.testDomainAuth();
-
-        // Test database connection
-        await this.testDatabase();
-    }
-
-    async testDomainAuth() {
-        const domainStatus = document.getElementById('domainStatus');
-        const domainValue = document.getElementById('domainValue');
-
-        const currentDomain = window.location.hostname;
-
-        domainStatus.className = 'debug-item warning';
-        domainValue.innerHTML = `
-            <strong>⚠️ Domain Check</strong><br>
-            Current: ${currentDomain}<br>
-            <small>Ensure "${currentDomain}" is in Firebase Auth → Settings → Authorized domains</small>
-        `;
-
-        logger.warn(`Ensure ${currentDomain} is authorized in Firebase console`);
-    }
-
-    async testDatabase() {
-        const databaseStatus = document.getElementById('databaseStatus');
-        const databaseValue = document.getElementById('databaseValue');
-
-        if (!this.db) {
-            databaseStatus.className = 'debug-item error';
-            databaseValue.textContent = 'Firestore not initialized';
-            return;
-        }
-
-        try {
-            // Test basic database connection
-            const testDoc = await this.db.collection('test').limit(1).get();
-
-            databaseStatus.className = 'debug-item success';
-            databaseValue.innerHTML = `
-                <strong>✅ Database Connected</strong><br>
-                Firestore: Accessible<br>
-                Rules: Test mode recommended
-            `;
-
-            logger.success('Database connection successful');
-
-        } catch (error) {
-            if (error.code === 'permission-denied') {
-                databaseStatus.className = 'debug-item warning';
-                databaseValue.innerHTML = `
-                    <strong>⚠️ Permission Denied</strong><br>
-                    Set Firestore to test mode:<br>
-                    <code>allow read, write: if request.time < timestamp.date(2025, 12, 31);</code>
-                `;
-                logger.warn('Database permissions need configuration');
-            } else {
-                databaseStatus.className = 'debug-item error';
-                databaseValue.innerHTML = `
-                    <strong>❌ Database Error</strong><br>
-                    ${error.message}
-                `;
-                logger.error(`Database error: ${error.message}`);
-            }
-        }
-    }
-}
-
-// Main Application Class
+// DevOps Preparation Tracker with Firebase
 class DevOpsTracker {
     constructor() {
         this.user = null;
         this.isSignUp = false;
-        this.debugger = null;
+        this.allExpanded = false;
 
+        // DevOps topics data
+        this.data = {
+            "topics": [
+                {
+                    "id": "terraform",
+                    "name": "Terraform",
+                    "description": "Infrastructure as Code with Terraform",
+                    "subtopics": [
+                        {"id": "terraform-basics", "name": "Terraform Basics & Architecture", "completed": false, "comments": ""},
+                        {"id": "iac-concepts", "name": "Infrastructure as Code (IaC) Concepts", "completed": false, "comments": ""},
+                        {"id": "terraform-commands", "name": "Terraform Commands & CLI", "completed": false, "comments": ""},
+                        {"id": "state-management", "name": "State Management & Remote State", "completed": false, "comments": ""},
+                        {"id": "terraform-modules", "name": "Modules & Module Development", "completed": false, "comments": ""},
+                        {"id": "variables-datasources", "name": "Variables & Data Sources", "completed": false, "comments": ""},
+                        {"id": "providers", "name": "Providers & Provider Configuration", "completed": false, "comments": ""},
+                        {"id": "workspaces", "name": "Terraform Workspaces", "completed": false, "comments": ""},
+                        {"id": "terraform-security", "name": "Best Practices & Security", "completed": false, "comments": ""},
+                        {"id": "terraform-scenarios", "name": "Scenario-Based Questions", "completed": false, "comments": ""}
+                    ]
+                },
+                {
+                    "id": "linux", 
+                    "name": "Linux",
+                    "description": "Linux System Administration & Operations",
+                    "subtopics": [
+                        {"id": "linux-fundamentals", "name": "Linux Fundamentals & Architecture", "completed": false, "comments": ""},
+                        {"id": "file-system", "name": "File System & Directory Structure", "completed": false, "comments": ""},
+                        {"id": "command-line", "name": "Command Line & Shell Scripting", "completed": false, "comments": ""},
+                        {"id": "process-management", "name": "Process Management", "completed": false, "comments": ""},
+                        {"id": "system-admin", "name": "System Administration", "completed": false, "comments": ""},
+                        {"id": "network-config", "name": "Network Configuration", "completed": false, "comments": ""},
+                        {"id": "security-permissions", "name": "Security & Permissions", "completed": false, "comments": ""},
+                        {"id": "package-management", "name": "Package Management", "completed": false, "comments": ""},
+                        {"id": "system-monitoring", "name": "System Monitoring & Troubleshooting", "completed": false, "comments": ""},
+                        {"id": "performance-tuning", "name": "Performance Tuning", "completed": false, "comments": ""}
+                    ]
+                },
+                {
+                    "id": "kubernetes",
+                    "name": "Kubernetes", 
+                    "description": "Container Orchestration with Kubernetes",
+                    "subtopics": [
+                        {"id": "k8s-architecture", "name": "Kubernetes Architecture & Components", "completed": false, "comments": ""},
+                        {"id": "pods-deployments", "name": "Pods, Deployments & Services", "completed": false, "comments": ""},
+                        {"id": "configmaps-secrets", "name": "ConfigMaps & Secrets", "completed": false, "comments": ""},
+                        {"id": "storage-pv", "name": "Storage & Persistent Volumes", "completed": false, "comments": ""},
+                        {"id": "k8s-networking", "name": "Networking & Ingress", "completed": false, "comments": ""},
+                        {"id": "rbac-security", "name": "RBAC & Security", "completed": false, "comments": ""},
+                        {"id": "monitoring-logging", "name": "Monitoring & Logging", "completed": false, "comments": ""},
+                        {"id": "helm", "name": "Helm & Package Management", "completed": false, "comments": ""},
+                        {"id": "k8s-troubleshooting", "name": "Troubleshooting & Debugging", "completed": false, "comments": ""},
+                        {"id": "k8s-best-practices", "name": "Best Practices & Scenarios", "completed": false, "comments": ""}
+                    ]
+                },
+                {
+                    "id": "jenkins",
+                    "name": "Jenkins",
+                    "description": "CI/CD Automation with Jenkins", 
+                    "subtopics": [
+                        {"id": "jenkins-architecture", "name": "Jenkins Architecture & Setup", "completed": false, "comments": ""},
+                        {"id": "pipeline-development", "name": "Pipeline Development (Declarative & Scripted)", "completed": false, "comments": ""},
+                        {"id": "plugin-management", "name": "Plugin Management", "completed": false, "comments": ""},
+                        {"id": "build-deployment", "name": "Build & Deployment Automation", "completed": false, "comments": ""},
+                        {"id": "jenkins-security", "name": "Security & User Management", "completed": false, "comments": ""},
+                        {"id": "master-slave", "name": "Master-Slave Configuration", "completed": false, "comments": ""},
+                        {"id": "git-integration", "name": "Integration with Git & SCM", "completed": false, "comments": ""},
+                        {"id": "docker-k8s-integration", "name": "Docker & Kubernetes Integration", "completed": false, "comments": ""},
+                        {"id": "jenkins-monitoring", "name": "Monitoring & Troubleshooting", "completed": false, "comments": ""},
+                        {"id": "jenkins-best-practices", "name": "Best Practices", "completed": false, "comments": ""}
+                    ]
+                },
+                {
+                    "id": "github",
+                    "name": "GitHub",
+                    "description": "Version Control & GitHub Workflows",
+                    "subtopics": [
+                        {"id": "git-fundamentals", "name": "Git Fundamentals & Commands", "completed": false, "comments": ""},
+                        {"id": "branching-merging", "name": "Branching & Merging Strategies", "completed": false, "comments": ""},
+                        {"id": "github-actions", "name": "GitHub Actions & Workflows", "completed": false, "comments": ""},
+                        {"id": "pull-requests", "name": "Pull Requests & Code Review", "completed": false, "comments": ""},
+                        {"id": "repo-management", "name": "Repository Management", "completed": false, "comments": ""},
+                        {"id": "github-security", "name": "GitHub Security Features", "completed": false, "comments": ""},
+                        {"id": "api-integrations", "name": "API & Integrations", "completed": false, "comments": ""},
+                        {"id": "team-collaboration", "name": "Collaboration & Team Management", "completed": false, "comments": ""},
+                        {"id": "advanced-git", "name": "Advanced Git Operations", "completed": false, "comments": ""},
+                        {"id": "git-best-practices", "name": "Best Practices & Troubleshooting", "completed": false, "comments": ""}
+                    ]
+                },
+                {
+                    "id": "gitlab",
+                    "name": "GitLab", 
+                    "description": "GitLab CI/CD & DevOps Platform",
+                    "subtopics": [
+                        {"id": "gitlab-architecture", "name": "GitLab Architecture & Setup", "completed": false, "comments": ""},
+                        {"id": "gitlab-cicd", "name": "GitLab CI/CD Pipelines", "completed": false, "comments": ""},
+                        {"id": "runners-jobs", "name": "Runners & Job Management", "completed": false, "comments": ""},
+                        {"id": "gitlab-security", "name": "Security & Access Control", "completed": false, "comments": ""},
+                        {"id": "container-registry", "name": "Container Registry", "completed": false, "comments": ""},
+                        {"id": "gitlab-monitoring", "name": "Monitoring & Analytics", "completed": false, "comments": ""},
+                        {"id": "gitlab-api", "name": "API & Integrations", "completed": false, "comments": ""},
+                        {"id": "multi-project", "name": "Multi-project Pipelines", "completed": false, "comments": ""},
+                        {"id": "gitlab-vs-github", "name": "GitLab vs GitHub Comparison", "completed": false, "comments": ""},
+                        {"id": "gitlab-best-practices", "name": "Best Practices", "completed": false, "comments": ""}
+                    ]
+                },
+                {
+                    "id": "argocd",
+                    "name": "ArgoCD",
+                    "description": "GitOps Continuous Delivery with ArgoCD",
+                    "subtopics": [
+                        {"id": "gitops-principles", "name": "GitOps Principles & Concepts", "completed": false, "comments": ""},
+                        {"id": "argocd-architecture", "name": "ArgoCD Architecture & Components", "completed": false, "comments": ""},
+                        {"id": "app-deployment", "name": "Application Deployment & Management", "completed": false, "comments": ""},
+                        {"id": "sync-strategies", "name": "Sync Strategies & Policies", "completed": false, "comments": ""},
+                        {"id": "multi-cluster", "name": "Multi-cluster Management", "completed": false, "comments": ""},
+                        {"id": "argocd-rbac", "name": "RBAC & Security", "completed": false, "comments": ""},
+                        {"id": "argocd-monitoring", "name": "Monitoring & Observability", "completed": false, "comments": ""},
+                        {"id": "argocd-troubleshooting", "name": "Troubleshooting & Debugging", "completed": false, "comments": ""},
+                        {"id": "cicd-integration", "name": "Integration with CI/CD", "completed": false, "comments": ""},
+                        {"id": "argocd-scenarios", "name": "Best Practices & Scenarios", "completed": false, "comments": ""}
+                    ]
+                },
+                {
+                    "id": "networking",
+                    "name": "Networking",
+                    "description": "Network Fundamentals for DevOps",
+                    "subtopics": [
+                        {"id": "osi-tcpip", "name": "OSI & TCP/IP Model", "completed": false, "comments": ""},
+                        {"id": "ip-subnetting", "name": "IP Addressing & Subnetting", "completed": false, "comments": ""},
+                        {"id": "dns-dhcp", "name": "DNS & DHCP", "completed": false, "comments": ""},
+                        {"id": "routing-switching", "name": "Routing & Switching", "completed": false, "comments": ""},
+                        {"id": "load-balancing", "name": "Load Balancing & Proxies", "completed": false, "comments": ""},
+                        {"id": "firewalls", "name": "Firewalls & Security", "completed": false, "comments": ""},
+                        {"id": "cloud-networking", "name": "Cloud Networking (VPC, Subnets)", "completed": false, "comments": ""},
+                        {"id": "container-networking", "name": "Container Networking", "completed": false, "comments": ""},
+                        {"id": "network-troubleshooting", "name": "Troubleshooting Tools", "completed": false, "comments": ""},
+                        {"id": "network-security", "name": "Network Security & Best Practices", "completed": false, "comments": ""}
+                    ]
+                }
+            ]
+        };
+
+        console.log('DevOps Tracker initialized');
         this.init();
     }
 
     async init() {
-        logger.info('Initializing DevOps Tracker...');
+        console.log('Initializing tracker...');
 
-        // Initialize debugger
-        this.debugger = new FirebaseDebugger();
-
-        // Bind events
         this.bindEvents();
         this.bindAuthEvents();
-        this.bindDebugEvents();
 
-        logger.info('Application initialized');
+        if (auth) {
+            // Listen for auth state changes
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    console.log('User authenticated:', user.email);
+                    this.user = user;
+                    await this.onUserSignedIn();
+                } else {
+                    console.log('User signed out');
+                    this.user = null;
+                    this.onUserSignedOut();
+                }
+            });
+        } else {
+            console.log('Firebase not initialized - running in demo mode');
+            this.showLandingPage();
+        }
+
+        console.log('Tracker initialized successfully');
     }
 
-    bindDebugEvents() {
-        // Debug panel toggle
-        document.getElementById('debugToggle').addEventListener('click', () => {
-            const content = document.getElementById('debugContent');
-            const toggle = document.getElementById('debugToggle');
+    async onUserSignedIn() {
+        this.hideAuthModal();
+        this.showTrackerApp();
+        this.updateNavigation();
 
-            if (content.classList.contains('collapsed')) {
-                content.classList.remove('collapsed');
-                toggle.textContent = '−';
+        if (db) {
+            await this.loadProgressFromFirestore();
+        }
+
+        this.renderTopics();
+        this.updateProgress();
+    }
+
+    onUserSignedOut() {
+        this.showLandingPage();
+        this.updateNavigation();
+        this.setSyncStatus('synced', 'Ready');
+    }
+
+    showLandingPage() {
+        document.getElementById('landingSection').classList.remove('hidden');
+        document.getElementById('trackerApp').classList.add('hidden');
+        this.updateNavigation();
+    }
+
+    showTrackerApp() {
+        document.getElementById('landingSection').classList.add('hidden');
+        document.getElementById('trackerApp').classList.remove('hidden');
+        this.updateNavigation();
+    }
+
+    updateNavigation() {
+        const guestNav = document.getElementById('guestNav');
+        const authNav = document.getElementById('authNav');
+        const userEmail = document.getElementById('userEmail');
+
+        if (this.user) {
+            guestNav.classList.add('hidden');
+            authNav.classList.remove('hidden');
+            userEmail.textContent = this.user.email || this.user.uid;
+        } else {
+            guestNav.classList.remove('hidden');
+            authNav.classList.add('hidden');
+        }
+    }
+
+    async loadProgressFromFirestore() {
+        if (!this.user || !db) return;
+
+        this.setSyncStatus('syncing', 'Loading...');
+
+        try {
+            const doc = await db.collection('progress').doc(this.user.uid).get();
+
+            if (doc.exists) {
+                const data = doc.data();
+                console.log('Progress loaded from Firestore');
+                this.data.topics = data.topics;
+                this.setSyncStatus('synced', 'Synced');
             } else {
-                content.classList.add('collapsed');
-                toggle.textContent = '+';
+                console.log('No progress found, creating new document');
+                await this.saveProgressToFirestore();
             }
-        });
+        } catch (error) {
+            console.error('Error loading progress:', error);
+            this.setSyncStatus('error', 'Load failed');
+        }
+    }
 
-        // Test buttons
-        document.getElementById('testAuthBtn').addEventListener('click', () => {
-            this.testAuthentication();
-        });
+    async saveProgressToFirestore() {
+        if (!this.user || !db) return;
 
-        document.getElementById('testDbBtn').addEventListener('click', async () => {
-            await this.debugger.testDatabase();
-        });
+        this.setSyncStatus('syncing', 'Saving...');
 
-        document.getElementById('clearLogsBtn').addEventListener('click', () => {
-            logger.clear();
-        });
+        try {
+            await db.collection('progress').doc(this.user.uid).set({
+                topics: this.data.topics,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            console.log('Progress saved to Firestore');
+            this.setSyncStatus('synced', 'Synced');
+        } catch (error) {
+            console.error('Error saving progress:', error);
+            this.setSyncStatus('error', 'Save failed');
+        }
+    }
+
+    setSyncStatus(status, text) {
+        const syncStatus = document.getElementById('syncStatus');
+        if (syncStatus) {
+            syncStatus.className = `sync-status ${status}`;
+            syncStatus.innerHTML = `<span>●</span><span>${text}</span>`;
+        }
     }
 
     bindAuthEvents() {
@@ -793,48 +1269,60 @@ class DevOpsTracker {
             this.handleAuth(e);
         });
 
-        // Mode switching
+        // Auth mode switching
         document.getElementById('authSwitchBtn').addEventListener('click', (e) => {
             e.preventDefault();
             this.toggleAuthMode();
         });
 
-        // Show modal buttons
-        document.getElementById('signInBtn').addEventListener('click', () => {
+        // Show auth modal buttons
+        document.getElementById('signInBtn').addEventListener('click', (e) => {
+            e.preventDefault();
             this.showAuthModal('signin');
         });
 
-        document.getElementById('signUpBtn').addEventListener('click', () => {
+        document.getElementById('signUpBtn').addEventListener('click', (e) => {
+            e.preventDefault();
             this.showAuthModal('signup');
         });
 
-        document.getElementById('getStartedBtn').addEventListener('click', () => {
+        document.getElementById('getStartedBtn').addEventListener('click', (e) => {
+            e.preventDefault();
             this.showAuthModal('signup');
         });
 
-        document.getElementById('demoModeBtn').addEventListener('click', () => {
+        document.getElementById('demoModeBtn').addEventListener('click', (e) => {
+            e.preventDefault();
             this.startDemoMode();
         });
 
         // Sign out
-        document.getElementById('signOutBtn').addEventListener('click', () => {
+        document.getElementById('signOutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
             this.signOut();
         });
 
         // Close modal
-        document.getElementById('closeModal').addEventListener('click', () => {
+        document.getElementById('closeModal').addEventListener('click', (e) => {
+            e.preventDefault();
             this.hideAuthModal();
+        });
+
+        // Home link
+        document.getElementById('homeLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (this.user) {
+                this.showTrackerApp();
+            } else {
+                this.showLandingPage();
+            }
         });
     }
 
-    bindEvents() {
-        // Click outside modal to close
-        const authModal = document.getElementById('authModal');
-        authModal.addEventListener('click', (e) => {
-            if (e.target === authModal) {
-                this.hideAuthModal();
-            }
-        });
+    startDemoMode() {
+        console.log('Starting demo mode...');
+        this.user = { email: 'demo@example.com', uid: 'demo-user-' + Date.now() };
+        this.onUserSignedIn();
     }
 
     showAuthModal(mode = 'signin') {
@@ -847,12 +1335,6 @@ class DevOpsTracker {
         setTimeout(() => {
             document.getElementById('email').focus();
         }, 100);
-    }
-
-    hideAuthModal() {
-        const modal = document.getElementById('authModal');
-        modal.classList.add('hidden');
-        this.clearAuthForm();
     }
 
     updateAuthModalMode() {
@@ -880,21 +1362,36 @@ class DevOpsTracker {
         this.clearAuthMessages();
     }
 
+    hideAuthModal() {
+        const modal = document.getElementById('authModal');
+        modal.classList.add('hidden');
+        this.clearAuthForm();
+    }
+
     async handleAuth(e) {
         e.preventDefault();
-
-        if (!this.debugger.isInitialized) {
-            this.showAuthMessage('error', 'Firebase not initialized. Check configuration.');
-            logger.error('Authentication attempted but Firebase not initialized');
-            return;
-        }
 
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
 
+        console.log(`Attempting to ${this.isSignUp ? 'sign up' : 'sign in'} user: ${email}`);
+
+        // Demo mode
+        if (!auth) {
+            if (!email) {
+                this.showAuthMessage('error', 'Please enter an email address');
+                return;
+            }
+
+            console.log('Demo mode - simulating authentication');
+            this.user = { email: email, uid: 'demo-user-' + Date.now() };
+            this.onUserSignedIn();
+            return;
+        }
+
         // Validation
         if (!email || !password) {
-            this.showAuthMessage('error', 'Please fill in all fields');
+            this.showAuthMessage('error', 'Please fill in all required fields');
             return;
         }
 
@@ -902,8 +1399,6 @@ class DevOpsTracker {
             this.showAuthMessage('error', 'Password must be at least 6 characters');
             return;
         }
-
-        logger.info(`Attempting to ${this.isSignUp ? 'sign up' : 'sign in'}: ${email}`);
 
         this.clearAuthMessages();
 
@@ -914,16 +1409,16 @@ class DevOpsTracker {
 
         try {
             if (this.isSignUp) {
-                const userCredential = await this.debugger.auth.createUserWithEmailAndPassword(email, password);
-                logger.success(`Account created successfully: ${userCredential.user.uid}`);
-                this.showAuthMessage('success', 'Account created successfully!');
+                console.log('Creating account with Firebase Auth');
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                console.log('Account created successfully:', userCredential.user.uid);
             } else {
-                const userCredential = await this.debugger.auth.signInWithEmailAndPassword(email, password);
-                logger.success(`Sign in successful: ${userCredential.user.uid}`);
+                console.log('Signing in with Firebase Auth');
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                console.log('Sign in successful:', userCredential.user.uid);
             }
-
         } catch (error) {
-            logger.error(`Authentication error: ${error.code} - ${error.message}`);
+            console.error('Authentication error:', error);
             this.handleAuthError(error);
         } finally {
             submitBtn.textContent = originalText;
@@ -934,7 +1429,7 @@ class DevOpsTracker {
     handleAuthError(error) {
         let errorMessage = error.message;
 
-        // Provide user-friendly error messages
+        // User-friendly error messages
         switch (error.code) {
             case 'auth/user-not-found':
                 errorMessage = 'No account found with this email. Please sign up first.';
@@ -955,7 +1450,10 @@ class DevOpsTracker {
                 errorMessage = 'Network error. Please check your internet connection.';
                 break;
             case 'auth/unauthorized-domain':
-                errorMessage = 'This domain is not authorized. Check Firebase console settings.';
+                errorMessage = 'This domain is not authorized. Please contact support.';
+                break;
+            case 'auth/operation-not-allowed':
+                errorMessage = 'Email/password authentication is not enabled. Please contact support.';
                 break;
             default:
                 errorMessage = `Authentication failed: ${error.code}`;
@@ -965,59 +1463,21 @@ class DevOpsTracker {
     }
 
     async signOut() {
-        if (!this.debugger.isInitialized) return;
+        console.log('Signing out user...');
 
-        try {
-            await this.debugger.auth.signOut();
-            logger.success('User signed out successfully');
-        } catch (error) {
-            logger.error(`Sign out error: ${error.message}`);
-        }
-    }
-
-    startDemoMode() {
-        logger.info('Starting demo mode...');
-        this.user = { email: 'demo@example.com', uid: 'demo-user' };
-        this.updateUI();
-        this.showTrackerApp();
-    }
-
-    updateUI() {
-        const guestNav = document.getElementById('guestNav');
-        const authNav = document.getElementById('authNav');
-        const userEmail = document.getElementById('userEmail');
-
-        if (this.user) {
-            guestNav.classList.add('hidden');
-            authNav.classList.remove('hidden');
-            userEmail.textContent = this.user.email;
-        } else {
-            guestNav.classList.remove('hidden');
-            authNav.classList.add('hidden');
-        }
-    }
-
-    showTrackerApp() {
-        document.getElementById('landingSection').classList.add('hidden');
-        document.getElementById('trackerApp').classList.remove('hidden');
-        this.hideAuthModal();
-    }
-
-    showLandingPage() {
-        document.getElementById('landingSection').classList.remove('hidden');
-        document.getElementById('trackerApp').classList.add('hidden');
-    }
-
-    testAuthentication() {
-        logger.info('Testing authentication setup...');
-
-        if (!this.debugger.isInitialized) {
-            logger.error('Cannot test auth - Firebase not initialized');
+        if (!auth) {
+            this.user = null;
+            this.onUserSignedOut();
             return;
         }
 
-        logger.info('Auth service ready for testing');
-        logger.info('Try signing up with a test email to verify authentication');
+        try {
+            await auth.signOut();
+            console.log('User signed out successfully');
+        } catch (error) {
+            console.error('Sign out error:', error);
+            alert('Failed to sign out. Please try again.');
+        }
     }
 
     showAuthMessage(type, message) {
@@ -1049,17 +1509,338 @@ class DevOpsTracker {
         document.getElementById('password').value = '';
         this.clearAuthMessages();
     }
+
+    bindEvents() {
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.filterTopics(e.target.value);
+            });
+        }
+
+        // Expand/Collapse all
+        const expandAllBtn = document.getElementById('expandAllBtn');
+        if (expandAllBtn) {
+            expandAllBtn.addEventListener('click', () => {
+                this.toggleAllTopics();
+            });
+        }
+
+        // Export progress
+        const exportBtn = document.getElementById('exportBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                this.exportProgress();
+            });
+        }
+
+        // Click outside modal to close
+        const authModal = document.getElementById('authModal');
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                this.hideAuthModal();
+            }
+        });
+    }
+
+    renderTopics() {
+        console.log('Rendering topics...');
+        const container = document.getElementById('topicsContainer');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        this.data.topics.forEach((topic) => {
+            const completedCount = topic.subtopics.filter(st => st.completed).length;
+            const totalCount = topic.subtopics.length;
+            const percentage = Math.round((completedCount / totalCount) * 100);
+
+            const topicElement = document.createElement('div');
+            topicElement.className = 'topic-section';
+            topicElement.setAttribute('data-topic-id', topic.id);
+
+            topicElement.innerHTML = `
+                <div class="card">
+                    <div class="card__header topic-header" data-topic="${topic.id}">
+                        <div class="topic-header__left">
+                            <button class="topic-toggle" aria-expanded="false">
+                                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none">
+                                    <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <div class="topic-info">
+                                <h3 class="topic-title">${topic.name}</h3>
+                                <p class="topic-description">${topic.description}</p>
+                            </div>
+                        </div>
+                        <div class="topic-header__right">
+                            <div class="progress-indicator">
+                                <div class="progress-circle">
+                                    <svg class="progress-ring" width="40" height="40">
+                                        <circle class="progress-ring__circle" stroke="currentColor" stroke-width="3" 
+                                                fill="transparent" r="18" cx="20" cy="20"/>
+                                    </svg>
+                                    <span class="progress-text">${percentage}%</span>
+                                </div>
+                                <span class="progress-stats-small">${completedCount}/${totalCount}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card__body topic-content">
+                        <div class="subtopics-list">
+                            ${topic.subtopics.map(subtopic => `
+                                <div class="subtopic-item ${subtopic.completed ? 'completed' : ''}" data-subtopic-id="${subtopic.id}">
+                                    <div class="subtopic-header">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" ${subtopic.completed ? 'checked' : ''} 
+                                                   data-topic="${topic.id}" data-subtopic="${subtopic.id}">
+                                            <span class="checkbox-custom"></span>
+                                            <span class="subtopic-name">${subtopic.name}</span>
+                                        </label>
+                                    </div>
+                                    <div class="subtopic-comments">
+                                        <textarea class="form-control" placeholder="Add your notes and comments here..." 
+                                                  data-topic="${topic.id}" data-subtopic="${subtopic.id}">${subtopic.comments || ''}</textarea>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(topicElement);
+        });
+
+        this.bindTopicEvents();
+    }
+
+    bindTopicEvents() {
+        // Topic toggle functionality
+        document.querySelectorAll('.topic-header').forEach(header => {
+            header.addEventListener('click', (e) => {
+                if (e.target.closest('.progress-indicator')) return;
+
+                const topicId = header.getAttribute('data-topic');
+                this.toggleTopic(topicId);
+            });
+        });
+
+        // Checkbox change events
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', async (e) => {
+                const topicId = e.target.getAttribute('data-topic');
+                const subtopicId = e.target.getAttribute('data-subtopic');
+                await this.toggleSubtopic(topicId, subtopicId, e.target.checked);
+            });
+        });
+
+        // Comment textarea events
+        document.querySelectorAll('.subtopic-comments textarea').forEach(textarea => {
+            textarea.addEventListener('blur', async (e) => {
+                const topicId = e.target.getAttribute('data-topic');
+                const subtopicId = e.target.getAttribute('data-subtopic');
+                await this.updateSubtopicComment(topicId, subtopicId, e.target.value);
+            });
+        });
+    }
+
+    toggleTopic(topicId) {
+        const topicElement = document.querySelector(`[data-topic-id="${topicId}"]`);
+        const content = topicElement.querySelector('.topic-content');
+        const toggle = topicElement.querySelector('.topic-toggle');
+        const isExpanded = content.style.display === 'block';
+
+        if (isExpanded) {
+            content.style.display = 'none';
+            toggle.setAttribute('aria-expanded', 'false');
+        } else {
+            content.style.display = 'block';
+            toggle.setAttribute('aria-expanded', 'true');
+        }
+    }
+
+    toggleAllTopics() {
+        const expandAllText = document.getElementById('expandAllText');
+
+        this.allExpanded = !this.allExpanded;
+
+        document.querySelectorAll('.topic-section').forEach(topicElement => {
+            const content = topicElement.querySelector('.topic-content');
+            const toggle = topicElement.querySelector('.topic-toggle');
+
+            if (this.allExpanded) {
+                content.style.display = 'block';
+                toggle.setAttribute('aria-expanded', 'true');
+            } else {
+                content.style.display = 'none';
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        expandAllText.textContent = this.allExpanded ? 'Collapse All' : 'Expand All';
+    }
+
+    async toggleSubtopic(topicId, subtopicId, completed) {
+        const topic = this.data.topics.find(t => t.id === topicId);
+        const subtopic = topic.subtopics.find(st => st.id === subtopicId);
+
+        subtopic.completed = completed;
+
+        // Update UI
+        const subtopicElement = document.querySelector(`[data-subtopic-id="${subtopicId}"]`);
+        if (completed) {
+            subtopicElement.classList.add('completed');
+        } else {
+            subtopicElement.classList.remove('completed');
+        }
+
+        this.updateProgress();
+
+        if (db) {
+            await this.saveProgressToFirestore();
+        }
+    }
+
+    async updateSubtopicComment(topicId, subtopicId, comment) {
+        const topic = this.data.topics.find(t => t.id === topicId);
+        const subtopic = topic.subtopics.find(st => st.id === subtopicId);
+
+        subtopic.comments = comment;
+
+        if (db) {
+            await this.saveProgressToFirestore();
+        }
+    }
+
+    updateProgress() {
+        const totalSubtopics = this.data.topics.reduce((sum, topic) => sum + topic.subtopics.length, 0);
+        const completedSubtopics = this.data.topics.reduce((sum, topic) => 
+            sum + topic.subtopics.filter(st => st.completed).length, 0);
+
+        const overallPercentage = Math.round((completedSubtopics / totalSubtopics) * 100);
+
+        // Update overall progress
+        const progressFill = document.getElementById('overallProgressFill');
+        const progressText = document.getElementById('overallProgressText');
+        const completedStats = document.getElementById('completedStats');
+        const lastUpdated = document.getElementById('lastUpdated');
+
+        if (progressFill) progressFill.style.width = `${overallPercentage}%`;
+        if (progressText) progressText.textContent = `${overallPercentage}%`;
+        if (completedStats) completedStats.textContent = `${completedSubtopics} of ${totalSubtopics} topics completed`;
+        if (lastUpdated) lastUpdated.textContent = `Last updated: ${new Date().toLocaleString()}`;
+
+        // Update individual topic progress circles
+        this.data.topics.forEach(topic => {
+            const completedCount = topic.subtopics.filter(st => st.completed).length;
+            const totalCount = topic.subtopics.length;
+            const percentage = Math.round((completedCount / totalCount) * 100);
+
+            const progressCircle = document.querySelector(`[data-topic-id="${topic.id}"] .progress-circle`);
+            if (progressCircle) {
+                const circle = progressCircle.querySelector('.progress-ring__circle');
+                const text = progressCircle.querySelector('.progress-text');
+                const stats = progressCircle.parentElement.querySelector('.progress-stats-small');
+
+                if (circle && text && stats) {
+                    const radius = 18;
+                    const circumference = radius * 2 * Math.PI;
+                    const offset = circumference - (percentage / 100) * circumference;
+
+                    circle.style.strokeDasharray = circumference;
+                    circle.style.strokeDashoffset = offset;
+
+                    text.textContent = `${percentage}%`;
+                    stats.textContent = `${completedCount}/${totalCount}`;
+                }
+            }
+        });
+    }
+
+    filterTopics(searchTerm) {
+        const normalizedSearch = searchTerm.toLowerCase().trim();
+
+        document.querySelectorAll('.topic-section').forEach(topicElement => {
+            const topicName = topicElement.querySelector('.topic-title').textContent.toLowerCase();
+            const subtopics = Array.from(topicElement.querySelectorAll('.subtopic-name')).map(el => el.textContent.toLowerCase());
+
+            const topicMatches = topicName.includes(normalizedSearch);
+            const subtopicMatches = subtopics.some(subtopic => subtopic.includes(normalizedSearch));
+
+            if (normalizedSearch === '' || topicMatches || subtopicMatches) {
+                topicElement.style.display = 'block';
+
+                if (normalizedSearch !== '' && subtopicMatches) {
+                    const content = topicElement.querySelector('.topic-content');
+                    const toggle = topicElement.querySelector('.topic-toggle');
+                    content.style.display = 'block';
+                    toggle.setAttribute('aria-expanded', 'true');
+                }
+            } else {
+                topicElement.style.display = 'none';
+            }
+        });
+    }
+
+    exportProgress() {
+        if (!this.user) return;
+
+        const totalSubtopics = this.data.topics.reduce((sum, topic) => sum + topic.subtopics.length, 0);
+        const completedSubtopics = this.data.topics.reduce((sum, topic) => 
+            sum + topic.subtopics.filter(st => st.completed).length, 0);
+
+        let exportText = `DevOps Preparation Progress Report - ${this.user.email || this.user.uid}\n`;
+        exportText += `Generated: ${new Date().toLocaleString()}\n`;
+        exportText += `Overall Progress: ${completedSubtopics}/${totalSubtopics} (${Math.round((completedSubtopics / totalSubtopics) * 100)}%)\n\n`;
+
+        this.data.topics.forEach(topic => {
+            const completed = topic.subtopics.filter(st => st.completed).length;
+            const total = topic.subtopics.length;
+            const percentage = Math.round((completed / total) * 100);
+
+            exportText += `${topic.name}: ${completed}/${total} (${percentage}%)\n`;
+
+            topic.subtopics.forEach(subtopic => {
+                const status = subtopic.completed ? '✓' : '○';
+                exportText += `  ${status} ${subtopic.name}`;
+                if (subtopic.comments) {
+                    exportText += ` - ${subtopic.comments}`;
+                }
+                exportText += '\n';
+            });
+            exportText += '\n';
+        });
+
+        // Create and download file
+        const blob = new Blob([exportText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `devops-prep-progress-${(this.user.email || this.user.uid).split('@')[0]}-${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
 }
 
-// Initialize when DOM is ready
+// Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    logger.info('DOM loaded, starting application...');
+    console.log('DOM loaded, initializing DevOps Tracker...');
 
     try {
         window.tracker = new DevOpsTracker();
     } catch (error) {
-        logger.error(`Failed to initialize application: ${error.message}`);
-        console.error('Initialization error:', error);
+        console.error('Failed to initialize DevOps Tracker:', error);
+        document.body.innerHTML = `
+            <div style="padding: 2rem; text-align: center;">
+                <h2>❌ Failed to Load</h2>
+                <p>DevOps Tracker failed to initialize. Please refresh the page.</p>
+                <p style="color: #dc2626; font-size: 0.9rem;">${error.message}</p>
+            </div>
+        `;
     }
 });
     </script>
